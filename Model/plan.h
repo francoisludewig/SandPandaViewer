@@ -8,7 +8,8 @@ class Plan : Solid
 {
 public:
     Plan();
-    void ReadFromFile(FILE *ft);
+    void ReadFromFile(FILE *ft) override;
+    bool readFromStream(std::istream& in) override;
     void Draw(int n, bool isLineContainer);
 private:
     double dt,ds;

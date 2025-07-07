@@ -1,12 +1,12 @@
 #include "myglwidget.h"
 
-#include <GL/GLU.h>
+#include </usr/include/GL/glu.h>
 #include <QSurfaceFormat>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPen>
 #include <iostream>
-#include<windows.h>
+//#include<windows.h>
 
 MyGLWidget::MyGLWidget(QWidget *parent) : QOpenGLWidget(parent) {
     QSurfaceFormat format;
@@ -184,19 +184,19 @@ void MyGLWidget::run() {
     emit this->updateCurrentfile(this->currentFile);
 }
 
-void MyGLWidget::loadDirectory(std::string directory)
+void MyGLWidget::loadDirectory(QString directory)
 {
-    sphr.load(directory);
-    plr.load(directory);
+    sphr.load(directory.toStdString());
+    plr.load(directory.toStdString());
     this->reset();
 }
 
-void MyGLWidget::on_new_container_visual_parameter(std::string directory)
+void MyGLWidget::on_new_container_visual_parameter(QString directory)
 {
-    if(directory.compare("Full Container") == 0) {
+    if(directory.toStdString().compare("Full Container") == 0) {
         drawContainer = true;
         isLineContainer = false;
-    } else if(directory.compare("Line Container") == 0) {
+    } else if(directory.toStdString().compare("Line Container") == 0) {
         drawContainer = true;
         isLineContainer = true;
     } else {

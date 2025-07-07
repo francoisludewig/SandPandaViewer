@@ -3,6 +3,7 @@
 
 #include<vector>
 #include<cstdio>
+#include <istream>
 
 
 class Sphere
@@ -10,6 +11,8 @@ class Sphere
 public:
     Sphere();
     void ReadFromFile(FILE *ft);
+    bool readFromStream(std::istream& in);
+
     void Draw(int n);
 
 private:

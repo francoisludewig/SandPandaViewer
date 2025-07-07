@@ -51,11 +51,11 @@ private:
     void run();
 
 signals:
-    void updateCurrentfile(int currentfile);
+    void updateCurrentfile(int);
 
 public slots:
-    void loadDirectory(std::string directory);
-    void on_new_container_visual_parameter(std::string directory);
+    void loadDirectory(QString directory);
+    void on_new_container_visual_parameter(QString directory);
 };
 
 #endif // MYGLWIDGET_H

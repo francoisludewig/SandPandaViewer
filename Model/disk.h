@@ -8,9 +8,10 @@ class Disk : Solid
 {
 public:
     Disk();
-    void ReadFromFile(FILE *ft);
+    void ReadFromFile(FILE *ft) override;
+    bool readFromStream(std::istream& in) override;
     void Draw(int n, bool isLineContainer);
-
+    void Display();
 private:
     double r;
     int periodic;

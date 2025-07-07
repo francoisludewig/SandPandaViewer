@@ -4,12 +4,15 @@
 #include<cstdio>
 #include<vector>
 #include "velocity.h"
+#include <istream>
 
 class Solid
 {
 public:
     Solid();
-    void ReadFromFile(FILE *ft);
+    virtual void ReadFromFile(FILE *ft);
+    virtual bool readFromStream(std::istream& in);
+    virtual void Display();
 protected:
     std::vector<double> x{},y{},z{};
     std::vector<double> nx{},ny{},nz{};

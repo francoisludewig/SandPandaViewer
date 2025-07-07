@@ -10,6 +10,7 @@ class Elbow
 public:
     Elbow();
     void ReadFromFile(FILE *ft);
+    bool readFromStream(std::istream& in);
     void Draw(int n, bool isLineContainer);
 
 private:

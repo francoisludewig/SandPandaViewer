@@ -5,7 +5,7 @@
 #endif
 
 #include <QOpenGLFunctions>
-#include<GL/GLU.h>
+#include<GL/glu.h>
 
 #include<tuple>
 
@@ -32,7 +32,7 @@ void StripeOnSphere::draw(double x, double y, double z, double r, double nx, dou
     // Drawing Stripes
     glColor3f(0.0f, 1.0f, 1.0f);
 
-    for(int i = 0 ; i < vertexA.size() ; i+=4){
+    for(int i = 0 ; i < (int)vertexA.size() ; i+=4){
         glBegin(GL_POLYGON);
         for(int j = 0 ; j < 4 ; j++){
             //printf("index : %d\n", i+j);
@@ -45,7 +45,7 @@ void StripeOnSphere::draw(double x, double y, double z, double r, double nx, dou
         glEnd();
     }
 
-    for(int i = 0 ; i < vertexB.size() ; i+=4){
+    for(int i = 0 ; i < (int)vertexB.size() ; i+=4){
         glBegin(GL_POLYGON);
         for(int j = 0 ; j < 4 ; j++){
             //printf("index : %d\n", i+j);

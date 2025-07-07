@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include <QPushButton>
 #include <QLabel>
-#include <string>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -26,14 +25,14 @@ private slots:
     void on_pushButtonPlay_clicked();
     void on_pushButtonStop_clicked();
     void on_pushButtonReset_clicked();
-    void on_currentfile_changed(int currentfile);
+    void on_currentfile_changed(int);
     void on_pushButton_2_clicked();
 
     void on_comboBox_currentTextChanged(const QString &arg1);
 
 signals:
-    void on_new_directory(std::string directory);
-    void on_new_container_visual(std::string directory);
+    void new_directory(QString directory);
+    void new_container_visual(QString directory);
 
 private:
     Ui::MainWindow *ui;

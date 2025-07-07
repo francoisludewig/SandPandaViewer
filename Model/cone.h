@@ -3,13 +3,16 @@
 
 #include "solid.h"
 #include<cstdio>
+#include <istream>
 
 class Cone : Solid
 {
 public:
     Cone();
-    void ReadFromFile(FILE *ft);
+    void ReadFromFile(FILE *ft) override;
+    bool readFromStream(std::istream& in) override;
     void Draw(int n, bool isLineContainer);
+    void Display();
 private:
     double r0,r1,h,dr;
     int inte;

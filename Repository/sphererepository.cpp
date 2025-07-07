@@ -1,5 +1,10 @@
 #include "Repository/sphererepository.h"
 
+#include <fstream>
+#include <iostream>
+#include <filesystem>
+#include <vector>
+#include <string>
 #include <cstdio>
 
 SphereRepository::SphereRepository() {
@@ -8,42 +13,45 @@ SphereRepository::SphereRepository() {
 
 void SphereRepository::load(std::string directory)
 {
-    int count = 0;
-    N = 0;
-    std::FILE *ft = nullptr;
-    char filename[2048];
+    namespace fs = std::filesystem;
 
     spheres.clear();
+    N = 0;
+    int count = 0;
 
-    do {
-        //sprintf(filename, "C:\\Users\\utilisateur\\Documents\\TestBox\\Out\\grain_%d.txt", N);
-        //sprintf(filename, "C:\\Users\\utilisateur\\OneDrive - student.helmo.be\\Bureau\\Dev\\Archives\\LuGaProjects\\Test\\Sphere\\Elbow\\New\\Out\\grain_%d.txt", N);
-        //sprintf(filename, "C:\\Users\\utilisateur\\OneDrive - student.helmo.be\\Bureau\\Dev\\Archives\\LuGaProjects\\Test\\Sphere\\Cone\\New\\Out\\grain_%d.txt", N);
-        sprintf(filename, "%s\\Out\\grain_%d.txt", directory.data(), N);
+    while (true) {
+        fs::path filePath = fs::path(directory) / "Out" / ("grain_" + std::to_string(N) + ".txt");
 
-        printf("filename : %s\n", filename);
-        ft = std::fopen(filename,"r");
-        if(ft) {
-            printf("Load file %s\n", filename);
-            fscanf_s(ft,"%d",&count);
-            if(N == 0) {
-                for(int i = 0 ; i < count ; ++i) {
-                    Sphere sph{};
-                    sph.ReadFromFile(ft);
-                    spheres.push_back(sph);
+        std::ifstream file(filePath);
+        if (!file.is_open())
+            break;
+
+        std::cout << "Loading file: " << filePath << "\n";
+        file >> count;
+        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Skip to next line
+
+        if (N == 0) {
+            for (int i = 0; i < count; ++i) {
+                Sphere sph;
+                if (!sph.readFromStream(file)) {
+                    std::cerr << "Error reading sphere " << i << " in file " << filePath << "\n";
                 }
-            } else {
-                for(int i = 0 ; i < count ; ++i) {
-                    spheres[i].ReadFromFile(ft);
+                spheres.push_back(sph);
+            }
+        } else {
+            for (int i = 0; i < count; ++i) {
+                if (i < spheres.size()) {
+                    if (!spheres[i].readFromStream(file)) {
+                        std::cerr << "Error updating sphere " << i << " in file " << filePath << "\n";
+                    }
                 }
             }
-            printf("Sphere count : %d\n", count);
-            fclose(ft);
-            N++;
         }
-    } while(ft);
 
-    printf("%d files found and loaded.\n", N);
+        ++N;
+    }
+
+    std::cout << N << " files found and loaded.\n";
 }
 
 

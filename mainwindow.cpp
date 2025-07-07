@@ -9,10 +9,9 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    connect(this, &MainWindow::new_directory, ui->openGLWidget, &MyGLWidget::loadDirectory);
+    connect(this, &MainWindow::new_container_visual, ui->openGLWidget, &MyGLWidget::on_new_container_visual_parameter);
     connect(ui->openGLWidget, &MyGLWidget::updateCurrentfile, this, &MainWindow::on_currentfile_changed);
-    connect(this, &MainWindow::on_new_directory, ui->openGLWidget, &MyGLWidget::loadDirectory);
-    connect(this, &MainWindow::on_new_container_visual, ui->openGLWidget, &MyGLWidget::on_new_container_visual_parameter);
-
 }
 
 MainWindow::~MainWindow()
@@ -64,7 +63,7 @@ void MainWindow::on_pushButton_2_clicked()
     int nMode = fileDialog.exec();
     QStringList _fnames = fileDialog.selectedFiles();
     for(auto f : _fnames) {
-        emit on_new_directory(f.toStdString());
+        emit new_directory(f);
         break;
     }
 
@@ -72,6 +71,6 @@ void MainWindow::on_pushButton_2_clicked()
 
 void MainWindow::on_comboBox_currentTextChanged(const QString &arg1)
 {
-    emit this->on_new_container_visual(arg1.toStdString());
+    emit this->new_container_visual(arg1);
 }
 
