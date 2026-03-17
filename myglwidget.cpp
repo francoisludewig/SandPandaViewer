@@ -24,7 +24,7 @@ MyGLWidget::MyGLWidget(QWidget *parent) : QOpenGLWidget(parent) {
 
 void MyGLWidget::incrementCurrentfile()
 {
-    this->currentFile += 1;
+    this->currentFile += this->frameStep;
     this->currentFile = this->currentFile % sphr.getN();
     emit this->updateCurrentfile(this->currentFile);
     std::cout << "Emit Current file : " << this->currentFile << std::endl;
@@ -33,9 +33,9 @@ void MyGLWidget::incrementCurrentfile()
 
 void MyGLWidget::decrementCurrentfile()
 {
-    this->currentFile -= 1;
+    this->currentFile -= this->frameStep;
     if(this->currentFile < 0)
-        this->currentFile = sphr.getN()-1;
+        this->currentFile = ((this->currentFile % sphr.getN()) + sphr.getN()) % sphr.getN();
     emit this->updateCurrentfile(this->currentFile);
     std::cout << "Emit Current file : " << this->currentFile << std::endl;
     this->update();
@@ -177,11 +177,16 @@ void MyGLWidget::paintGL()
 
 
 void MyGLWidget::run() {
-    this->currentFile += 1;
+    this->currentFile += this->frameStep;
     this->currentFile = this->currentFile % sphr.getN();
     std::cout << "Current file : " << this->currentFile << std::endl;
     this->update();
     emit this->updateCurrentfile(this->currentFile);
+}
+
+void MyGLWidget::setFrameStep(int step)
+{
+    this->frameStep = step;
 }
 
 void MyGLWidget::loadDirectory(QString directory)

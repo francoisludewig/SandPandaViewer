@@ -29,6 +29,7 @@ private slots:
     void on_pushButton_2_clicked();
 
     void on_comboBox_currentTextChanged(const QString &arg1);
+    void on_spinBoxStep_valueChanged(int value);
 
 signals:
     void new_directory(QString directory);

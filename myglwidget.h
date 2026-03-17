@@ -21,6 +21,7 @@ public:
     void play();
     void stop();
     void reset();
+    void setFrameStep(int step);
 
 protected:
     void initializeGL() override;
@@ -38,6 +39,7 @@ private:
     SphereRepository sphr {};
     ContainerRepository plr {};
     int currentFile = 0;
+    int frameStep = 1;
     bool animation = false;
     bool drawContainer = true;
     bool isLineContainer = false;

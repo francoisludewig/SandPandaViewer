@@ -74,3 +74,8 @@ void MainWindow::on_comboBox_currentTextChanged(const QString &arg1)
     emit this->new_container_visual(arg1);
 }
 
+void MainWindow::on_spinBoxStep_valueChanged(int value)
+{
+    ui->openGLWidget->setFrameStep(value);
+}
+
