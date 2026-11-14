@@ -7,6 +7,7 @@
 #include <QOpenGLFunctions>
 
 #include <string>
+#include <vector>
 #include "Repository/sphererepository.h"
 #include "Repository/containerrepository.h"
 
@@ -43,6 +44,11 @@ private:
     bool animation = false;
     bool drawContainer = true;
     bool isLineContainer = false;
+
+    // Numéros des fichiers chargés (fileNumbers[currentFile] = n° de grain_n.txt)
+    std::vector<int> fileNumbers {};
+    bool loading = false;
+    int displayedFileNumber() const;
 
     void prepare();
     double posX = 0, posY = 0;
