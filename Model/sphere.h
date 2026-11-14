@@ -10,8 +10,11 @@ class Sphere
 {
 public:
     Sphere();
+    Sphere(int size);
+
     void ReadFromFile(FILE *ft);
     bool readFromStream(std::istream& in);
+    bool readFromStream(std::istream& in, int index);
 
     void Draw(int n);
 

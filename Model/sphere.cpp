@@ -13,6 +13,29 @@ static const StripeOnSphere sos{25};
 
 Sphere::Sphere() {}
 
+Sphere::Sphere(int size) {
+    sp.resize(size);
+    r.resize(size);
+    x.resize(size);
+    y.resize(size);
+    z.resize(size);
+    vx.resize(size);
+    vy.resize(size);
+    vz.resize(size);
+    wx.resize(size);
+    wy.resize(size);
+    wz.resize(size);
+    nx.resize(size);
+    ny.resize(size);
+    nz.resize(size);
+    tx.resize(size);
+    ty.resize(size);
+    tz.resize(size);
+    sx.resize(size);
+    sy.resize(size);
+    sz.resize(size);
+}
+
 void Sphere::ReadFromFile(FILE *ft)
 {
     int b = 0,b1 = 0;
@@ -125,6 +148,47 @@ bool Sphere::readFromStream(std::istream& in) {
         nx.push_back(1); ny.push_back(0); nz.push_back(0);
         tx.push_back(0); ty.push_back(1); tz.push_back(0);
         sx.push_back(0); sy.push_back(0); sz.push_back(1);
+    }
+
+    if (b1 != -9) bd = true;
+    return true;
+}
+
+
+bool Sphere::readFromStream(std::istream& in, int index) {
+    int b = 0, b1 = 0;
+    double q0 = 0, q1 = 1, q2 = 0, q3 = 0;
+
+    std::string line;
+    if (!std::getline(in, line)) return false;
+
+    std::istringstream iss(line);
+    if (!(iss >> b >> sp[index] >> r[index]
+          >> x[index] >> y[index] >> z[index]
+          >> q0 >> q1 >> q2 >> q3
+          >> vx[index] >> vy[index] >> vz[index]
+          >> wx[index] >> wy[index] >> wz[index]
+          >> b >> b1)) {
+        std::cerr << "Sphere: parsing error in line: " << line << "\n";
+        return false;
+    }
+
+    if (q0 != 0) {
+        nx[index] = 1 - 2*q2*q2 - 2*q3*q3;
+        ny[index] = 2*q1*q2 + 2*q3*q0;
+        nz[index] = 2*q1*q3 - 2*q2*q0;
+
+        tx[index] = 2*q1*q2 - 2*q3*q0;
+        ty[index] = 1 - 2*q1*q1 - 2*q3*q3;
+        tz[index] = 2*q2*q3 + 2*q1*q0;
+
+        sx[index] = 2*q1*q3 + 2*q2*q0;
+        sy[index] = 2*q2*q3 - 2*q1*q0;
+        sz[index] = 1 - 2*q1*q1 - 2*q2*q2;
+    } else {
+        nx[index] = 1; ny[index] = 0; nz[index] = 0;
+        tx[index] = 0; ty[index] = 1; tz[index] = 0;
+        sx[index] = 0; sy[index] = 0; sz[index] = 1;
     }
 
     if (b1 != -9) bd = true;

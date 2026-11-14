@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     connect(this, &MainWindow::new_directory, ui->openGLWidget, &MyGLWidget::loadDirectory);
     connect(this, &MainWindow::new_container_visual, ui->openGLWidget, &MyGLWidget::on_new_container_visual_parameter);
-    connect(ui->openGLWidget, &MyGLWidget::updateCurrentfile, this, &MainWindow::on_currentfile_changed);
+    connect(ui->openGLWidget, &MyGLWidget::updateCurrentfile, this, &MainWindow::onCurrentFileChanged);
 }
 
 MainWindow::~MainWindow()
@@ -48,7 +48,7 @@ void MainWindow::on_pushButtonReset_clicked()
     ui->openGLWidget->reset();
 }
 
-void MainWindow::on_currentfile_changed(int currentfile)
+void MainWindow::onCurrentFileChanged(int currentfile)
 {
     std::cout << "Slot on_currentfile_changed" << std::endl;
     ui->currentFile->setText(QString::number(currentfile));

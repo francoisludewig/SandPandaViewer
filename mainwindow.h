@@ -25,7 +25,7 @@ private slots:
     void on_pushButtonPlay_clicked();
     void on_pushButtonStop_clicked();
     void on_pushButtonReset_clicked();
-    void on_currentfile_changed(int);
+    void onCurrentFileChanged(int);
     void on_pushButton_2_clicked();
 
     void on_comboBox_currentTextChanged(const QString &arg1);

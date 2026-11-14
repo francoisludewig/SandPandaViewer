@@ -26,14 +26,25 @@ void SphereRepository::load(std::string directory)
         if (!file.is_open())
             break;
 
-        std::cout << "Loading file: " << filePath << "\n";
+        ++N;
+    }
+    std::cout << N << " files found.\n";
+
+    for(int n = 0 ; n <= N ; ++n) {
+        fs::path filePath = fs::path(directory) / "Out" / ("grain_" + std::to_string(n) + ".txt");
+
+        std::ifstream file(filePath);
+        if (!file.is_open())
+            break;
+
+        //std::cout << "Loading file: " << filePath << "\n";
         file >> count;
         file.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Skip to next line
 
-        if (N == 0) {
+        if (n == 0) {
             for (int i = 0; i < count; ++i) {
-                Sphere sph;
-                if (!sph.readFromStream(file)) {
+                Sphere sph{N};
+                if (!sph.readFromStream(file, n)) {
                     std::cerr << "Error reading sphere " << i << " in file " << filePath << "\n";
                 }
                 spheres.push_back(sph);
@@ -41,17 +52,15 @@ void SphereRepository::load(std::string directory)
         } else {
             for (int i = 0; i < count; ++i) {
                 if (i < spheres.size()) {
-                    if (!spheres[i].readFromStream(file)) {
+                    if (!spheres[i].readFromStream(file, n)) {
                         std::cerr << "Error updating sphere " << i << " in file " << filePath << "\n";
                     }
                 }
             }
         }
-
-        ++N;
     }
 
-    std::cout << N << " files found and loaded.\n";
+    std::cout << N << " files loaded.\n";
 }
 
 

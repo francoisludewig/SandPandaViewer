@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+<circle cx="54" cy="46" r="34" fill="#1A1A1A"/><circle cx="202" cy="46" r="34" fill="#1A1A1A"/>
+<rect x="6" y="30" width="244" height="220" rx="44" fill="#22313F"/>
+<rect x="6" y="30" width="244" height="220" rx="44" fill="url(#v)" opacity=".0"/>
+<circle cx="80.2" cy="195.6" r="7.9" fill="#3787C3"/>
+<circle cx="97.3" cy="195.6" r="7.9" fill="#3787C3"/>
+<circle cx="114.7" cy="195.0" r="7.9" fill="#3787C3"/>
+<circle cx="130.9" cy="195.9" r="7.9" fill="#3787C3"/>
+<circle cx="148.2" cy="195.2" r="7.9" fill="#3787C3"/>
+<circle cx="166.1" cy="195.5" r="7.9" fill="#3787C3"/>
+<circle cx="89.4" cy="180.7" r="7.9" fill="#5DBCA3"/>
+<circle cx="106.2" cy="180.4" r="7.9" fill="#5DBCA3"/>
+<circle cx="123.2" cy="181.2" r="7.9" fill="#5DBCA3"/>
+<circle cx="140.0" cy="181.1" r="7.9" fill="#5DBCA3"/>
+<circle cx="157.2" cy="180.3" r="7.9" fill="#5DBCA3"/>
+<circle cx="174.3" cy="180.9" r="7.9" fill="#5DBCA3"/>
+<circle cx="80.3" cy="165.5" r="7.9" fill="#EFC64F"/>
+<circle cx="97.9" cy="166.0" r="7.9" fill="#EFC64F"/>
+<circle cx="114.8" cy="166.5" r="7.9" fill="#EFC64F"/>
+<circle cx="131.8" cy="166.6" r="7.9" fill="#EFC64F"/>
+<circle cx="148.4" cy="166.4" r="7.9" fill="#EFC64F"/>
+<circle cx="165.4" cy="166.6" r="7.9" fill="#EFC64F"/>
+<circle cx="89.5" cy="150.8" r="7.9" fill="#E57042"/>
+<circle cx="105.6" cy="151.0" r="7.9" fill="#E57042"/>
+<circle cx="123.6" cy="151.3" r="7.9" fill="#E57042"/>
+<circle cx="140.2" cy="151.1" r="7.9" fill="#E57042"/>
+<circle cx="157.0" cy="151.2" r="7.9" fill="#E57042"/>
+<circle cx="173.8" cy="151.4" r="7.9" fill="#E57042"/>
+<path d="M66 86 V208 Q66 214 72 214 H184 Q190 214 190 208 V86" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="196" cy="196" r="38" fill="#FFFFFF"/><circle cx="196" cy="196" r="31" fill="#1A1A1A"/>
+<path d="M186 180 L214 196 L186 212 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round"/>
+</svg>

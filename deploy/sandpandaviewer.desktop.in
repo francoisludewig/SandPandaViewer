@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=SandPanda Viewer
+Comment=Visualisation des simulations SandPanda
+Exec=$$PREFIX/bin/$$TARGET
+Icon=$$TARGET
+Terminal=false
+Categories=Science;Physics;Education;
+StartupWMClass=$$TARGET
