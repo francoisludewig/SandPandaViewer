@@ -16,9 +16,12 @@ public:
     // Nombre de fichiers grain_0.txt, grain_1.txt, ... consécutifs dans <directory>/Out
     static int countFiles(const std::string& directory);
 
-    // Charge les fichiers grain_<n>.txt pour chaque n de fileNumbers (dans l'ordre).
-    // onFileLoaded(k) est appelé après chaque fichier (k = nombre de fichiers lus) ;
-    // s'il renvoie false, le chargement est interrompu et load renvoie false.
+    // Charge les fichiers grain_<n>.txt pour chaque n de fileNumbers.
+    // Le premier fichier est lu seul, les suivants en parallèle sur plusieurs threads.
+    // onFileLoaded(k) est appelé (un appel à la fois, dans un ordre quelconque) après
+    // la lecture du fichier d'indice k dans fileNumbers ; s'il renvoie false, le
+    // chargement est interrompu et load renvoie false.
+    // Si un fichier est illisible, seuls les fichiers qui le précèdent sont conservés.
     bool load(const std::string& directory,
               const std::vector<int>& fileNumbers,
               const std::function<bool(int)>& onFileLoaded = {});

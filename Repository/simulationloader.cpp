@@ -59,7 +59,7 @@ void loadSimulation(QPromise<SimulationData>& promise,
     // 1. Grains
     promise.setProgressValueAndText(0, QObject::tr("Chargement des grains..."));
     bool ok = data.spheres.load(dir, fileNumbers, [&](int k) {
-        return report(grainSizes[k - 1]);
+        return report(grainSizes[k]);
     });
     if (!ok)
         return;   // annulé
@@ -72,7 +72,7 @@ void loadSimulation(QPromise<SimulationData>& promise,
     promise.setProgressValueAndText(static_cast<int>(bytesRead / unit),
                                     QObject::tr("Chargement du conteneur..."));
     ok = data.containers.load(dir, fileNumbers, [&](int k) {
-        return report(containerSizes[k - 1]);
+        return report(containerSizes[k]);
     });
     if (!ok)
         return;   // annulé

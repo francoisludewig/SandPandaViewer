@@ -17,7 +17,8 @@ public:
     int getN() {return N;}
 
     // Charge les fichiers container_<n>.txt pour chaque n de fileNumbers (dans l'ordre).
-    // Même convention que SphereRepository::load pour onFileLoaded.
+    // onFileLoaded(k) est appelé après la lecture du fichier d'indice k ;
+    // s'il renvoie false, le chargement est interrompu et load renvoie false.
     bool load(const std::string& directory,
               const std::vector<int>& fileNumbers,
               const std::function<bool(int)>& onFileLoaded = {});
