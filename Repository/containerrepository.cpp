@@ -23,7 +23,9 @@ void ContainerRepository::Draw(int n, bool isLineContainer)
     }
 }
 
-void ContainerRepository::load(std::string directory)
+bool ContainerRepository::load(const std::string& directory,
+                               const std::vector<int>& fileNumbers,
+                               const std::function<bool(int)>& onFileLoaded)
 {
     namespace fs = std::filesystem;
 
@@ -33,14 +35,12 @@ void ContainerRepository::load(std::string directory)
     cones.clear();
     elbows.clear();
 
-    while (true) {
-        fs::path filePath = fs::path(directory) / "Out" / ("container_" + std::to_string(N) + ".txt");
+    for (int fileNumber : fileNumbers) {
+        fs::path filePath = fs::path(directory) / "Out" / ("container_" + std::to_string(fileNumber) + ".txt");
 
         std::ifstream file(filePath);
         if (!file.is_open())
             break;
-
-        std::cout << "Loading file: " << filePath << "\n";
 
         int Nplan = 0, Ndisk = 0, Ncone = 0, Nelbow = 0;
         file >> Nplan >> Ndisk >> Ncone >> Nelbow;
@@ -89,7 +89,10 @@ void ContainerRepository::load(std::string directory)
         }
 
         ++N;
+        if (onFileLoaded && !onFileLoaded(N))
+            return false;
     }
 
-    std::cout << N << " files found and loaded.\n";
+    std::cout << N << " container files loaded.\n";
+    return true;
 }

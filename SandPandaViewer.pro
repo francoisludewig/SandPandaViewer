@@ -1,4 +1,4 @@
-QT       += core gui openglwidgets
+QT       += core gui openglwidgets concurrent
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
@@ -15,7 +15,9 @@ SOURCES += \
     Model/sphere.cpp \
     Model/velocity.cpp \
     Repository/containerrepository.cpp \
+    Repository/simulationloader.cpp \
     Repository/sphererepository.cpp \
+    loadrangedialog.cpp \
     main.cpp \
     mainwindow.cpp \
     myglwidget.cpp \
@@ -30,7 +32,9 @@ HEADERS += \
     Model/sphere.h \
     Model/velocity.h \
     Repository/containerrepository.h \
+    Repository/simulationloader.h \
     Repository/sphererepository.h \
+    loadrangedialog.h \
     mainwindow.h \
     myglwidget.h \
     stripeonsphere.h

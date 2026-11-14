@@ -8,6 +8,15 @@
 #include <iostream>
 //#include<windows.h>
 
+#include <QApplication>
+#include <QFutureWatcher>
+#include <QMessageBox>
+#include <QProgressDialog>
+#include <QtConcurrent>
+
+#include "loadrangedialog.h"
+#include "Repository/simulationloader.h"
+
 MyGLWidget::MyGLWidget(QWidget *parent) : QOpenGLWidget(parent) {
 /*    QSurfaceFormat format;
     format.setDepthBufferSize(24);
@@ -25,19 +34,23 @@ MyGLWidget::MyGLWidget(QWidget *parent) : QOpenGLWidget(parent) {
 
 void MyGLWidget::incrementCurrentfile()
 {
+    if (sphr.getN() == 0)
+        return;
     this->currentFile += this->frameStep;
     this->currentFile = this->currentFile % sphr.getN();
-    emit this->updateCurrentfile(this->currentFile);
+    emit this->updateCurrentfile(displayedFileNumber());
     std::cout << "Emit Current file : " << this->currentFile << std::endl;
     this->update();
 }
 
 void MyGLWidget::decrementCurrentfile()
 {
+    if (sphr.getN() == 0)
+        return;
     this->currentFile -= this->frameStep;
     if(this->currentFile < 0)
         this->currentFile = ((this->currentFile % sphr.getN()) + sphr.getN()) % sphr.getN();
-    emit this->updateCurrentfile(this->currentFile);
+    emit this->updateCurrentfile(displayedFileNumber());
     std::cout << "Emit Current file : " << this->currentFile << std::endl;
     this->update();
 }
@@ -58,7 +71,7 @@ void MyGLWidget::reset()
 {
     this->currentFile = 0;
     this->update();
-    emit this->updateCurrentfile(this->currentFile);
+    emit this->updateCurrentfile(displayedFileNumber());
     std::cout << "Emit Current file : " << this->currentFile << std::endl;
 }
 
@@ -178,11 +191,13 @@ void MyGLWidget::paintGL()
 
 
 void MyGLWidget::run() {
+    if (sphr.getN() == 0)
+        return;
     this->currentFile += this->frameStep;
     this->currentFile = this->currentFile % sphr.getN();
     std::cout << "Current file : " << this->currentFile << std::endl;
     this->update();
-    emit this->updateCurrentfile(this->currentFile);
+    emit this->updateCurrentfile(displayedFileNumber());
 }
 
 void MyGLWidget::setFrameStep(int step)
@@ -190,11 +205,74 @@ void MyGLWidget::setFrameStep(int step)
     this->frameStep = step;
 }
 
+int MyGLWidget::displayedFileNumber() const
+{
+    if (currentFile >= 0 && currentFile < static_cast<int>(fileNumbers.size()))
+        return fileNumbers[currentFile];
+    return currentFile;
+}
+
 void MyGLWidget::loadDirectory(QString directory)
 {
-    sphr.load(directory.toStdString());
-    plr.load(directory.toStdString());
-    this->reset();
+    if (loading)
+        return;
+
+    // 1. Détection des fichiers disponibles (rapide : on teste seulement leur existence)
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    const int fileCount = SphereRepository::countFiles(directory.toStdString());
+    QApplication::restoreOverrideCursor();
+
+    if (fileCount == 0) {
+        QMessageBox::warning(this, tr("Aucun fichier"),
+                             tr("Aucun fichier grain_0.txt trouvé dans %1/Out.").arg(directory));
+        return;
+    }
+
+    // 2. Choix du premier, du dernier fichier et du pas
+    LoadRangeDialog rangeDialog(fileCount, window());
+    if (rangeDialog.exec() != QDialog::Accepted)
+        return;
+    const std::vector<int> selection = rangeDialog.selectedFileNumbers();
+
+    // 3. Chargement dans un thread secondaire, avec fenêtre de progression
+    loading = true;
+
+    // Plage 0..0 = indicateur d'activité, en attendant la plage réelle fixée par le thread
+    auto *progress = new QProgressDialog(tr("Chargement..."), tr("Annuler"), 0, 0, window());
+    progress->setWindowTitle(tr("Chargement de la simulation"));
+    progress->setWindowModality(Qt::WindowModal);
+    progress->setMinimumDuration(0);
+    progress->setAutoClose(false);
+    progress->setAutoReset(false);
+    progress->setValue(0);
+
+    auto *watcher = new QFutureWatcher<SimulationData>(this);
+    connect(watcher, &QFutureWatcher<SimulationData>::progressRangeChanged,
+            progress, &QProgressDialog::setRange);
+    connect(watcher, &QFutureWatcher<SimulationData>::progressValueChanged,
+            progress, &QProgressDialog::setValue);
+    connect(watcher, &QFutureWatcher<SimulationData>::progressTextChanged,
+            progress, &QProgressDialog::setLabelText);
+    connect(progress, &QProgressDialog::canceled,
+            watcher, &QFutureWatcher<SimulationData>::cancel);
+
+    connect(watcher, &QFutureWatcher<SimulationData>::finished, this, [this, watcher, progress]() {
+        QFuture<SimulationData> future = watcher->future();
+        if (!future.isCanceled() && future.resultCount() > 0) {
+            // De retour dans le thread graphique : on remplace les données d'un bloc
+            SimulationData data = future.takeResult();
+            sphr = std::move(data.spheres);
+            plr = std::move(data.containers);
+            fileNumbers = std::move(data.fileNumbers);
+            reset();
+        }
+        progress->close();
+        progress->deleteLater();
+        watcher->deleteLater();
+        loading = false;
+    });
+
+    watcher->setFuture(QtConcurrent::run(loadSimulation, directory, selection));
 }
 
 void MyGLWidget::on_new_container_visual_parameter(QString directory)
