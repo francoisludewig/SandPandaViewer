@@ -18,7 +18,7 @@ struct SimulationData
 };
 
 // Fonction exécutée dans un thread secondaire via QtConcurrent::run.
-// Progression : de 0 à 2 * fileNumbers.size() (grains, puis conteneur).
+// Progression proportionnelle à la taille des fichiers lus (grains, puis conteneur).
 // Le chargement s'arrête proprement si le QFuture associé est annulé.
 // Ne touche à aucun objet graphique ni à OpenGL.
 void loadSimulation(QPromise<SimulationData>& promise,

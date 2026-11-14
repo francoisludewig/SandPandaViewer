@@ -237,8 +237,8 @@ void MyGLWidget::loadDirectory(QString directory)
     // 3. Chargement dans un thread secondaire, avec fenêtre de progression
     loading = true;
 
-    auto *progress = new QProgressDialog(tr("Chargement..."), tr("Annuler"), 0,
-                                         2 * static_cast<int>(selection.size()), window());
+    // Plage 0..0 = indicateur d'activité, en attendant la plage réelle fixée par le thread
+    auto *progress = new QProgressDialog(tr("Chargement..."), tr("Annuler"), 0, 0, window());
     progress->setWindowTitle(tr("Chargement de la simulation"));
     progress->setWindowModality(Qt::WindowModal);
     progress->setMinimumDuration(0);
@@ -247,6 +247,8 @@ void MyGLWidget::loadDirectory(QString directory)
     progress->setValue(0);
 
     auto *watcher = new QFutureWatcher<SimulationData>(this);
+    connect(watcher, &QFutureWatcher<SimulationData>::progressRangeChanged,
+            progress, &QProgressDialog::setRange);
     connect(watcher, &QFutureWatcher<SimulationData>::progressValueChanged,
             progress, &QProgressDialog::setValue);
     connect(watcher, &QFutureWatcher<SimulationData>::progressTextChanged,
