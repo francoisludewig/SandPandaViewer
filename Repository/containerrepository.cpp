@@ -12,13 +12,13 @@ ContainerRepository::ContainerRepository() {}
 void ContainerRepository::Draw(int n, bool isLineContainer)
 {
     if(n >=0 && n < N) {
-        for(auto plan : plans)
+        for(auto& plan : plans)
             plan.Draw(n, isLineContainer);
-        for(auto disk : disks)
+        for(auto& disk : disks)
             disk.Draw(n, isLineContainer);
-        for(auto cone : cones)
+        for(auto& cone : cones)
             cone.Draw(n, isLineContainer);
-        for(auto elbow : elbows)
+        for(auto& elbow : elbows)
             elbow.Draw(n, isLineContainer);
     }
 }
@@ -89,7 +89,7 @@ bool ContainerRepository::load(const std::string& directory,
         }
 
         ++N;
-        if (onFileLoaded && !onFileLoaded(N))
+        if (onFileLoaded && !onFileLoaded(N - 1))
             return false;
     }
 

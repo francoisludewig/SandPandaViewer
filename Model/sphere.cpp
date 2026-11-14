@@ -195,6 +195,37 @@ bool Sphere::readFromStream(std::istream& in, int index) {
     return true;
 }
 
+void Sphere::setFrame(int index, int species, double radius,
+                      double px, double py, double pz,
+                      double q0, double q1, double q2, double q3,
+                      double pvx, double pvy, double pvz,
+                      double pwx, double pwy, double pwz)
+{
+    sp[index] = species;
+    r[index] = radius;
+    x[index] = px; y[index] = py; z[index] = pz;
+    vx[index] = pvx; vy[index] = pvy; vz[index] = pvz;
+    wx[index] = pwx; wy[index] = pwy; wz[index] = pwz;
+
+    if (q0 != 0) {
+        nx[index] = 1 - 2*q2*q2 - 2*q3*q3;
+        ny[index] = 2*q1*q2 + 2*q3*q0;
+        nz[index] = 2*q1*q3 - 2*q2*q0;
+
+        tx[index] = 2*q1*q2 - 2*q3*q0;
+        ty[index] = 1 - 2*q1*q1 - 2*q3*q3;
+        tz[index] = 2*q2*q3 + 2*q1*q0;
+
+        sx[index] = 2*q1*q3 + 2*q2*q0;
+        sy[index] = 2*q2*q3 - 2*q1*q0;
+        sz[index] = 1 - 2*q1*q1 - 2*q2*q2;
+    } else {
+        nx[index] = 1; ny[index] = 0; nz[index] = 0;
+        tx[index] = 0; ty[index] = 1; tz[index] = 0;
+        sx[index] = 0; sy[index] = 0; sz[index] = 1;
+    }
+}
+
 void Sphere::Draw(int n){
     sos.draw(x[n], y[n], z[n], r[n],
              nx[n], ny[n], nz[n],
