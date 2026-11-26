@@ -11,7 +11,7 @@ class SphereRepository
 public:
     SphereRepository();
     void Draw(int n);
-    int getN() {return N;}
+    int getN() const {return N;}
 
     // Nombre de fichiers grain_0.txt, grain_1.txt, ... consécutifs dans <directory>/Out
     static int countFiles(const std::string& directory);
