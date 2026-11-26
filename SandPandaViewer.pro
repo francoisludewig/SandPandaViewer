@@ -17,6 +17,7 @@ SOURCES += \
     Repository/containerrepository.cpp \
     Repository/simulationloader.cpp \
     Repository/sphererepository.cpp \
+    exportvideodialog.cpp \
     loadrangedialog.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
     Repository/containerrepository.h \
     Repository/simulationloader.h \
     Repository/sphererepository.h \
+    exportvideodialog.h \
     loadrangedialog.h \
     mainwindow.h \
     myglwidget.h \

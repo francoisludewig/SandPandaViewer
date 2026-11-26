@@ -6,10 +6,14 @@
 #include <QPainter>
 #include <QPen>
 #include <iostream>
+#include <algorithm>
 //#include<windows.h>
 
 #include <QApplication>
+#include <QFile>
 #include <QFutureWatcher>
+#include <QImage>
+#include <QProcess>
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QtConcurrent>
@@ -212,8 +216,148 @@ int MyGLWidget::displayedFileNumber() const
     return currentFile;
 }
 
+int MyGLWidget::frameCount() const
+{
+    return sphr.getN();
+}
+
+bool MyGLWidget::exportCurrentImage(const QString &path)
+{
+    // grabFramebuffer() relance paintGL() : on coupe l'animation pour ne pas avancer d'une image
+    const bool wasAnimating = animation;
+    animation = false;
+    const QImage image = grabFramebuffer();
+    animation = wasAnimating;
+    if (wasAnimating)
+        update();
+
+    if (image.isNull() || !image.save(path)) {
+        QMessageBox::critical(this, tr("Export de l'image"),
+                              tr("Impossible d'enregistrer l'image dans %1.").arg(path));
+        return false;
+    }
+    return true;
+}
+
+bool MyGLWidget::exportVideo(const QString &path, int fps, int first, int last, int step)
+{
+    if (exporting || loading || sphr.getN() == 0 || step < 1)
+        return false;
+    first = std::clamp(first, 0, sphr.getN() - 1);
+    last = std::clamp(last, first, sphr.getN() - 1);
+
+    exporting = true;
+    const bool wasAnimating = animation;
+    animation = false;               // sinon paintGL() appelle run() et avance tout seul
+    const int savedFile = currentFile;
+
+    // Taille fixe pour toute la vidéo, dimensions paires (exigé par yuv420p)
+    const QImage probe = grabFramebuffer();
+    const int w = probe.width() & ~1;
+    const int h = probe.height() & ~1;
+
+    auto restore = [&]() {
+        currentFile = savedFile;
+        animation = wasAnimating;
+        exporting = false;
+        emit updateCurrentfile(displayedFileNumber());
+        update();
+    };
+
+    if (w < 2 || h < 2) {
+        restore();
+        return false;
+    }
+
+    QProcess ffmpeg;
+    ffmpeg.setProcessChannelMode(QProcess::SeparateChannels);
+    ffmpeg.start(QStringLiteral("ffmpeg"), {
+        "-y", "-loglevel", "error",
+        "-f", "rawvideo", "-pix_fmt", "rgb24",
+        "-s", QString("%1x%2").arg(w).arg(h),
+        "-r", QString::number(fps),
+        "-i", "-",
+        "-c:v", "libx264", "-preset", "veryfast", "-crf", "18",
+        "-pix_fmt", "yuv420p",
+        "-movflags", "+faststart",
+        path });
+    if (!ffmpeg.waitForStarted()) {
+        QMessageBox::critical(this, tr("Export vidéo"),
+                              tr("Impossible de lancer ffmpeg. Vérifiez qu'il est installé "
+                                 "et accessible dans le PATH."));
+        restore();
+        return false;
+    }
+
+    const int total = (last - first) / step + 1;
+    QProgressDialog progress(tr("Export de la vidéo..."), tr("Annuler"), 0, total, window());
+    progress.setWindowTitle(tr("Export vidéo"));
+    progress.setWindowModality(Qt::WindowModal);
+    progress.setMinimumDuration(0);
+    progress.setValue(0);
+
+    bool canceled = false;
+    bool pipeError = false;
+    int k = 0;
+    for (int i = first; i <= last; i += step, ++k) {
+        if (progress.wasCanceled()) {
+            canceled = true;
+            break;
+        }
+        currentFile = i;
+        emit updateCurrentfile(displayedFileNumber());
+
+        QImage image = grabFramebuffer();     // rendu de paintGL() pour l'image i
+        if (image.width() != w || image.height() != h)
+            image = image.copy(0, 0, w, h);   // tronque la ligne/colonne impaire, ou s'adapte si la fenêtre a changé
+        image = image.convertToFormat(QImage::Format_RGB888);
+
+        // Ligne par ligne : les lignes d'un QImage sont alignées sur 4 octets
+        for (int y = 0; y < h; ++y) {
+            if (ffmpeg.write(reinterpret_cast<const char *>(image.constScanLine(y)), w * 3) < 0) {
+                pipeError = true;
+                break;
+            }
+        }
+        // Attend que ffmpeg ait consommé l'image (évite d'accumuler des Go en mémoire)
+        while (!pipeError && ffmpeg.bytesToWrite() > 0) {
+            if (!ffmpeg.waitForBytesWritten(-1))
+                pipeError = true;
+        }
+        if (pipeError || ffmpeg.state() != QProcess::Running) {
+            pipeError = true;
+            break;
+        }
+
+        progress.setValue(k + 1);
+        QApplication::processEvents();
+    }
+
+    ffmpeg.closeWriteChannel();
+    if (canceled)
+        ffmpeg.kill();
+    ffmpeg.waitForFinished(-1);
+    progress.close();
+
+    bool ok = !canceled && !pipeError
+              && ffmpeg.exitStatus() == QProcess::NormalExit && ffmpeg.exitCode() == 0;
+    if (!ok) {
+        QFile::remove(path);
+        if (!canceled) {
+            const QString err = QString::fromLocal8Bit(ffmpeg.readAllStandardError()).trimmed();
+            QMessageBox::critical(this, tr("Export vidéo"),
+                                  tr("L'encodage a échoué.") + (err.isEmpty() ? QString() : "\n\n" + err));
+        }
+    }
+
+    restore();
+    return ok;
+}
+
 void MyGLWidget::loadDirectory(QString directory)
 {
+    if (exporting)
+        return;
     if (loading)
         return;
 

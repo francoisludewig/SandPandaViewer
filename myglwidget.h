@@ -24,6 +24,13 @@ public:
     void reset();
     void setFrameStep(int step);
 
+    // Export
+    int frameCount() const;
+    const std::vector<int> &loadedFileNumbers() const { return fileNumbers; }
+    int displayedFileNumber() const;
+    bool exportCurrentImage(const QString &path);
+    bool exportVideo(const QString &path, int fps, int first, int last, int step);
+
 protected:
     void initializeGL() override;
     void paintGL() override;
@@ -48,7 +55,7 @@ private:
     // Numéros des fichiers chargés (fileNumbers[currentFile] = n° de grain_n.txt)
     std::vector<int> fileNumbers {};
     bool loading = false;
-    int displayedFileNumber() const;
+    bool exporting = false;
 
     void prepare();
     double posX = 0, posY = 0;
