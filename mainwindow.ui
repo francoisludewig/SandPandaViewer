@@ -148,6 +148,26 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="pushButtonExportImage">
+          <property name="text">
+           <string>Export Image</string>
+          </property>
+          <property name="toolTip">
+           <string>Exporter l'image courante (PNG, JPEG, BMP)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonExportVideo">
+          <property name="text">
+           <string>Export Video</string>
+          </property>
+          <property name="toolTip">
+           <string>Exporter une série d'images en vidéo MP4 (nécessite ffmpeg)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="pushButton">
           <property name="text">
            <string>Quit</string>
